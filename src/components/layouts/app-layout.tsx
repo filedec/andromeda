@@ -1,150 +1,72 @@
 "use client"
-import * as React from "react"
-import {
-  AlertCircle,
-  Archive,
-  ArchiveX,
-  File,
-  Inbox,
-  MessagesSquare,
-  Send,
-  ShoppingCart,
-  Trash2,
-  Users2,
-} from "lucide-react"
+import * as React from 'react';
 
-import { Nav } from "@/components/navigation/nav"
 import { cn } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
 
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
+import { AccountSwitcher } from '../blocks/account-switcher';
+import { accounts } from '@/assets/data/data';
+import { ScrollArea, ScrollBar } from '../ui/scroll-area';
+import { Input } from '../ui/input';
+import {
+  BellIcon,
+  GearIcon,
+  InfoCircledIcon,
+  MagnifyingGlassIcon,
+} from '@radix-ui/react-icons';
+import { Avatar, AvatarFallback } from '../ui/avatar';
+import ThemeSwitch from '../blocks/theme-switcher';
+import { useAuth } from '@/context/auth-provider';
+export function AppLayout({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
 
-interface MailProps {
-  accounts: {
-    label: string
-    email: string
-    icon: React.ReactNode
-  }[]
-  defaultLayout: number[] | undefined
-  defaultCollapsed?: boolean
-  navCollapsedSize: number
-}
-
-export function Mail({
-  defaultLayout = [265, 440, 655],
-  defaultCollapsed = false,
-  navCollapsedSize,
-}: MailProps) {
-  const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed)
-
-  return (
-    <TooltipProvider delayDuration={0}>
-      <ResizablePanelGroup
-        direction="horizontal"
-        onLayout={(sizes: number[]) => {
-          document.cookie = `react-resizable-panels:layout=${JSON.stringify(
-            sizes
-          )}`
-        }}
-        className="h-full max-h-[800px] items-stretch"
-      >
-        <ResizablePanel
-          defaultSize={defaultLayout[0]}
-          collapsedSize={navCollapsedSize}
-          collapsible={true}
-          minSize={15}
-          maxSize={20}
-          
-          className={cn(isCollapsed && "min-w-[50px] transition-all duration-300 ease-in-out")}
-        >
-          <div className={cn("flex h-[52px] items-center justify-center", isCollapsed ? 'h-[52px]': 'px-2')}>
-            {/* <AccountSwitcher isCollapsed={isCollapsed} accounts={accounts} /> */}
+  if (user)
+    return (
+      <main>
+        <div className='h-screen w-screen flex'>
+          <aside className='w-64 h-full border-r'>
+            <div className={cn('h-16 flex items-center p-4 font-medium')}>
+              <h2 className='text-2xl'>Filedec</h2>
+            </div>
+            <TooltipProvider delayDuration={0}>
+              <div
+                className={cn('flex h-[52px] items-center justify-center p-4')}>
+                <AccountSwitcher isCollapsed={false} accounts={accounts} />
+              </div>
+            </TooltipProvider>
+          </aside>
+          <div className='flex flex-col h-full w-[calc(100%-16rem)]'>
+            <nav className='h-16 border-b w-full flex justify-between items-center px-3.5'>
+              <form className='w-full max-w-96'>
+                <div className='relative'>
+                  <MagnifyingGlassIcon className='absolute left-2 top-2 h-5 w-5 text-muted-foreground' />
+                  <Input placeholder='Search' className='pl-8 shadow-none' />
+                </div>
+              </form>
+              <div className='flex gap-3 items-center'>
+                <ThemeSwitch />
+                <InfoCircledIcon className='h-5 w-5' />
+                <GearIcon className='h-5 w-5' />
+                <BellIcon className='h-5 w-5' />
+                <Avatar className='h-12 w-12'>
+                  <AvatarFallback>NT</AvatarFallback>
+                </Avatar>
+              </div>
+            </nav>
+            <div className='w-full h-[calc(100%-4rem)]'>
+              <ScrollArea className='h-full w-full scroll-smooth'>
+                <ScrollBar />
+                {children}
+              </ScrollArea>
+            </div>
           </div>
-          <Separator />
-          <Nav
-            isCollapsed={isCollapsed}
-            links={[
-              {
-                title: "Inbox",
-                label: "128",
-                icon: Inbox,
-                variant: "default",
-              },
-              {
-                title: "Drafts",
-                label: "9",
-                icon: File,
-                variant: "ghost",
-              },
-              {
-                title: "Sent",
-                label: "",
-                icon: Send,
-                variant: "ghost",
-              },
-              {
-                title: "Junk",
-                label: "23",
-                icon: ArchiveX,
-                variant: "ghost",
-              },
-              {
-                title: "Trash",
-                label: "",
-                icon: Trash2,
-                variant: "ghost",
-              },
-              {
-                title: "Archive",
-                label: "",
-                icon: Archive,
-                variant: "ghost",
-              },
-            ]}
-          />
-          <Separator />
-          <Nav
-            isCollapsed={isCollapsed}
-            links={[
-              {
-                title: "Social",
-                label: "972",
-                icon: Users2,
-                variant: "ghost",
-              },
-              {
-                title: "Updates",
-                label: "342",
-                icon: AlertCircle,
-                variant: "ghost",
-              },
-              {
-                title: "Forums",
-                label: "128",
-                icon: MessagesSquare,
-                variant: "ghost",
-              },
-              {
-                title: "Shopping",
-                label: "8",
-                icon: ShoppingCart,
-                variant: "ghost",
-              },
-              {
-                title: "Promotions",
-                label: "21",
-                icon: Archive,
-                variant: "ghost",
-              },
-            ]}
-          />
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
-         
-        </ResizablePanel>
-      </ResizablePanelGroup>
-    </TooltipProvider>
+        </div>
+      </main>
+    );
+  return(
+    <main>
+      {children}
+    </main>
   )
 }

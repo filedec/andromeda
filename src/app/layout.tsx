@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Barlow } from 'next/font/google';
 import './globals.css';
+import { AppLayout } from '@/components/layouts/app-layout';
+import { ThemeProvider } from '@/context/theme-provider';
+import { AuthProvider } from '@/context/auth-provider';
 
 const barlow = Barlow({
   subsets: ['latin'],
@@ -18,8 +21,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
-      <body className={barlow.className}>{children}</body>
+    <html lang='en' suppressHydrationWarning>
+      <body className={barlow.className}>
+        <ThemeProvider
+          attribute='class'
+          defaultTheme='system'
+          enableSystem
+          disableTransitionOnChange>
+          <AuthProvider>
+            <AppLayout>{children}</AppLayout>
+          </AuthProvider>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
