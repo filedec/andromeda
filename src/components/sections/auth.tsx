@@ -1,4 +1,5 @@
 'use client';
+
 import { Metadata } from 'next';
 import Link from 'next/link';
 
@@ -9,11 +10,12 @@ import { useRouter } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'Authentication',
-  description: 'Authentication forms built using the components.',
+  description: 'Register or Login to continue',
 };
 
-export default function Register() {
+export function Authentication() {
   const { user } = useAuth();
+  console.log(user)
   const router = useRouter();
 
   if (!user)
